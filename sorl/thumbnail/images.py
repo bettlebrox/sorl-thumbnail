@@ -166,7 +166,12 @@ class DummyImageFile(BaseImageFile):
 
 class UrlStorage(Storage):
     def open(self, name):
-        return urllib2.urlopen(name)
+        try:
+            opener = urllib2.build_opener()
+            opener.addheaders = [('User-agent', settings.THUMBNAIL_USER_AGENT)]
+            return opener.open(name)
+        except AttributeError:
+            return urllib2.urlopen(name)
 
     def exists(self, name):
         try:
